@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --font-body: "Outfit", sans-serif;
+
+  --color-glass-100: rgba(255, 255, 255, 0.1);
+  --color-glass-200: rgba(255, 255, 255, 0.2);
+  --color-glass-300: rgba(255, 255, 255, 0.3);
+  --color-glass-dark: rgba(0, 0, 0, 0.3);
+
+  --backdrop-blur-xs: 2px;
+  --color-glass-200: rgba(255, 255, 255, 0.2);
+  --color-glass-300: rgba(255, 255, 255, 0.3);
+  --color-glass-dark: rgba(0, 0, 0, 0.3);
+
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+
+  --animate-fade-in: fadeIn 0.5s ease-out;
+  --animate-slide-up: slideUp 0.5s ease-out;
+  --animate-pulse-slow: pulse 3s infinite;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Base Styles */
+body {
+  font-family: var(--font-body);
+  @apply bg-slate-900 text-slate-100 antialiased overflow-x-hidden;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700/50 rounded-full hover:bg-slate-600/50 transition-colors;
+}
+
+/* Glass Components */
+@layer components {
+  .glass-panel {
+    @apply bg-glass-100 backdrop-blur-xl border border-white/10 shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-glass-100 backdrop-blur-lg border border-white/10 hover:bg-glass-200 transition-all duration-300;
+  }
+
+  .glass-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300
+           bg-gradient-to-r from-indigo-500 to-violet-500 
+           hover:from-indigo-400 hover:to-violet-400
+           shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40
+           active:scale-95 border border-white/10;
+  }
+
+  .glass-input {
+    @apply bg-glass-100 border border-white/10 rounded-lg px-4 py-3 
+           focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent
+           placeholder-slate-400 transition-all duration-300;
+  }
+}
