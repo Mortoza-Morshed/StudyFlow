@@ -1,20 +1,18 @@
-# StudyFlow 🎓
+# StudyFlow
 
-StudyFlow is an AI-powered study companion that transforms your notes and documents into interactive quizzes. Upload your study materials (PDF, DOCX, or text), select key concepts, and let our Gemini-powered AI generate challenging questions to test your knowledge.
+StudyFlow is an AI-powered study companion that transforms your notes and documents into interactive quizzes. Upload your study materials (PDF, DOCX, or text), select key concepts, and let Gemini-powered AI generate challenging questions to test your knowledge.
 
-![StudyFlow UI](https://via.placeholder.com/800x450?text=StudyFlow+Dashboard+Preview)
+## Features
 
-## ✨ Features
+- **Smart Document Parsing** — Support for PDF, DOCX, and plain text files.
+- **AI Question Generation** — Instantly creates relevant multiple-choice questions using Google's Gemini AI.
+- **Interactive Quizzes** — Take quizzes directly in the app with immediate feedback.
+- **Modern Interface** — Sleek, glassmorphism-inspired UI built with Tailwind CSS and Framer Motion.
+- **Split-View Mode** — Read your document and take the quiz side-by-side.
 
-- **Smart Document Parsing**: Support for PDF, DOCX, and plain text files.
-- **AI Question Generation**: Instantly creates relevant multiple-choice questions using Google's Gemini AI.
-- **Interactive Quizzes**: Take quizzes directly in the app with immediate feedback.
-- **Modern Interface**: sleek, glassmorphism-inspired UI built with Tailwind CSS and Framer Motion.
-- **Split-View Mode**: Read your document and take the quiz side-by-side.
+## Getting Started
 
-## 🚀 Getting Started
-
-Follow these instructions to get a copy of the project up and running on your local machine.
+Follow these instructions to get the project up and running on your local machine.
 
 ### Prerequisites
 
@@ -22,35 +20,36 @@ Follow these instructions to get a copy of the project up and running on your lo
 - [MongoDB](https://www.mongodb.com/try/download/community) (running locally or a cloud Atlas URI)
 - A [Google Gemini API Key](https://aistudio.google.com/app/apikey)
 
-### 📥 Installation
+### Installation
 
 1.  **Clone the repository**
 
     ```bash
     git clone <repository-url>
-    cd StudyHelper
+    cd StudyFlow
     ```
 
-2.  **Install Server Dependencies**
+2.  **Install server dependencies**
 
     ```bash
     cd server
     npm install
     ```
 
-3.  **Install Client Dependencies**
+3.  **Install client dependencies**
+
     ```bash
     cd ../client
     npm install
     ```
 
-### ⚙️ Configuration
+### Configuration
 
-You need to set up the environment variables for the backend server to connect to the database and the AI service.
+Set up the environment variables for the backend server.
 
 1.  Navigate to the `server` directory.
 2.  Create a new file named `.env`.
-3.  Add the following variables to it:
+3.  Add the following variables:
 
     ```env
     # server/.env
@@ -71,11 +70,12 @@ You need to set up the environment variables for the backend server to connect t
 
     > **Note:** Replace `your_actual_api_key_here` with the key you generated from Google AI Studio.
 
-### 🏃‍♂️ Running the Application
+### Running the Application
 
 You need to run both the backend and frontend servers.
 
 **1. Start the Backend Server**
+
 Open a terminal and run:
 
 ```bash
@@ -83,33 +83,37 @@ cd server
 npm run dev
 ```
 
-_You should see: "Server running on http://localhost:5000" and "MongoDB Connected"_
+Expected output: `Server running on http://localhost:5000` and `MongoDB Connected`.
 
 **2. Start the Frontend Client**
-Open a **new** terminal window and run:
+
+Open a separate terminal window and run:
 
 ```bash
 cd client
 npm run dev
 ```
 
-_You should see a link like: "Local: http://localhost:5173"_
+Expected output: `Local: http://localhost:5173`.
 
-**3. Use the App**
-Open your browser and navigate to `http://localhost:5173`.
+**3. Open the App**
 
-## 🛠️ Tech Stack
+Navigate to `http://localhost:5173` in your browser.
 
-- **Frontend**: React, Vite, Tailwind CSS v4, Framer Motion, Lucide React
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB, Mongoose
-- **AI**: Google Gemini SDK (`@google/genai`)
-- **File Handling**: Multer, PDF-parse, Mammoth
+## Tech Stack
 
-## 🤝 Contributing
+| Layer             | Technologies                                              |
+| ----------------- | --------------------------------------------------------- |
+| **Frontend**      | React, Vite, Tailwind CSS v4, Framer Motion, Lucide React |
+| **Backend**       | Node.js, Express.js                                       |
+| **Database**      | MongoDB, Mongoose                                         |
+| **AI**            | Google Gemini SDK (`@google/genai`)                       |
+| **File Handling** | Multer, PDF-parse, Mammoth                                |
 
-Feel free to fork this project and submit pull requests. Any contributions you make are **greatly appreciated**.
+## Contributing
 
-## 📄 License
+Contributions are welcome. Feel free to fork this project and submit pull requests.
+
+## License
 
 Distributed under the MIT License.
