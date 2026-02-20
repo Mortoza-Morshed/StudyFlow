@@ -2,7 +2,6 @@
 
 StudyFlow is an AI-powered study companion that transforms your notes and documents into interactive quizzes. Upload your study materials (PDF, DOCX, or text), select key concepts, and let our Gemini-powered AI generate challenging questions to test your knowledge.
 
-![StudyFlow UI](https://via.placeholder.com/800x450?text=StudyFlow+Dashboard+Preview)
 
 ## Features
 
@@ -19,8 +18,7 @@ Follow these instructions to get the project up and running on your local machin
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v16 or higher)
-- [MongoDB](https://www.mongodb.com/try/download/community) (running locally or a cloud Atlas URI)
-- A [Google Gemini API Key](https://aistudio.google.com/app/apikey)
+- [Google Gemini API Key](https://aistudio.google.com/app/apikey)
 
 ### Installation
 
@@ -116,6 +114,3 @@ Navigate to `http://localhost:5173` in your browser.
 
 Contributions are welcome. Feel free to fork this project and submit pull requests.
 
-## 📄 License
-
-Distributed under the MIT License.
