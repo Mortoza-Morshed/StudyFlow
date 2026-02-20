@@ -1,6 +1,8 @@
 # StudyFlow
 
-StudyFlow is an AI-powered study companion that transforms your notes and documents into interactive quizzes. Upload your study materials (PDF, DOCX, or text), select key concepts, and let Gemini-powered AI generate challenging questions to test your knowledge.
+StudyFlow is an AI-powered study companion that transforms your notes and documents into interactive quizzes. Upload your study materials (PDF, DOCX, or text), select key concepts, and let our Gemini-powered AI generate challenging questions to test your knowledge.
+
+![StudyFlow UI](https://via.placeholder.com/800x450?text=StudyFlow+Dashboard+Preview)
 
 ## Features
 
@@ -114,6 +116,6 @@ Navigate to `http://localhost:5173` in your browser.
 
 Contributions are welcome. Feel free to fork this project and submit pull requests.
 
-## License
+## 📄 License
 
 Distributed under the MIT License.
