@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, MousePointerClick } from "lucide-react";
+import { Sparkles, MousePointerClick, Cpu } from "lucide-react";
 
 function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
   const [selectedText, setSelectedText] = useState("");
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [isSelectionActive, setIsSelectionActive] = useState(false);
+  const [provider, setProvider] = useState("gemini");
   const contentRef = useRef(null);
 
   // Handle text selection logic
@@ -84,8 +85,7 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
     e.stopPropagation();
 
     if (selectedText) {
-      onGenerateQuestions(selectedText, 5);
-      // Clear selection after generation starts
+      onGenerateQuestions(selectedText, 5, provider);
       window.getSelection().removeAllRanges();
       setSelectedText("");
       setIsSelectionActive(false);
@@ -159,6 +159,40 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
 
               <div className="px-3 border-l border-white/10 text-xs text-slate-400 font-medium whitespace-nowrap tabular-nums">
                 {selectedText.length} chars
+              </div>
+
+              {/* Provider Toggle */}
+              <div className="flex items-center border-l border-white/10 pl-2 gap-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setProvider("gemini");
+                  }}
+                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
+                    provider === "gemini"
+                      ? "bg-indigo-500/30 text-indigo-300 border border-indigo-500/30"
+                      : "text-slate-500 hover:text-slate-300"
+                  }`}
+                  title="Google Gemini"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Gemini
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setProvider("openrouter");
+                  }}
+                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
+                    provider === "openrouter"
+                      ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
+                      : "text-slate-500 hover:text-slate-300"
+                  }`}
+                  title="OpenRouter (Fallback Enabled)"
+                >
+                  <Cpu className="w-3 h-3" />
+                  Advanced AI
+                </button>
               </div>
             </div>
           </motion.div>

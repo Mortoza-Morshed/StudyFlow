@@ -30,8 +30,8 @@ export const uploadDocument = async (file, text) => {
   throw new Error("No file or text provided");
 };
 
-export const generateQuestions = async (text, count = 5) => {
-  const response = await api.post("/questions/generate", { text, count });
+export const generateQuestions = async (text, count = 5, provider = "gemini") => {
+  const response = await api.post("/questions/generate", { text, count, provider });
   return response.data;
 };
 

@@ -2,7 +2,7 @@ import { generateMCQs } from "../utils/aiService.js";
 
 export const generateQuestions = async (req, res) => {
   try {
-    const { text, count = 5 } = req.body;
+    const { text, count = 5, provider = "gemini" } = req.body;
 
     if (!text || text.trim().length === 0) {
       return res.status(400).json({
@@ -12,11 +12,12 @@ export const generateQuestions = async (req, res) => {
     }
 
     const questionCount = Math.min(Math.max(1, count), 10);
-    const questions = await generateMCQs(text, questionCount);
+    const questions = await generateMCQs(text, questionCount, provider);
 
     res.json({
       success: true,
       questions,
+      provider,
       textLength: text.length,
       generatedCount: questions.length,
     });

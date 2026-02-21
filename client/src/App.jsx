@@ -4,7 +4,7 @@ import { BookOpen, FileText, GraduationCap, Plus, Sparkles, AlertCircle, X } fro
 import DocumentUploader from "./components/DocumentUploader";
 import DocumentViewer from "./components/DocumentViewer";
 import QuestionPanel from "./components/QuestionPanel";
-import { uploadDocument, generateQuestions, checkAnswers } from "./services/api";
+import { uploadDocument, generateQuestions } from "./services/api";
 
 function App() {
   const [currentView, setCurrentView] = useState("upload"); // upload, document, quiz, split
@@ -27,13 +27,13 @@ function App() {
     }
   };
 
-  const handleGenerateQuestions = async (text, count) => {
+  const handleGenerateQuestions = async (text, count, provider) => {
     setIsLoading(true);
     setError(null);
     try {
       // Switch to split view immediately to show loading state in right panel
       setCurrentView("split");
-      const data = await generateQuestions(text, count);
+      const data = await generateQuestions(text, count, provider);
       setQuestions(data.questions);
     } catch (err) {
       setError(err.response?.data?.error || err.message);
@@ -41,16 +41,6 @@ function App() {
       if (questions.length === 0) setCurrentView("document");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleCheckAnswers = async (userAnswers) => {
-    try {
-      const data = await checkAnswers(questions, userAnswers);
-      return data;
-    } catch (err) {
-      setError(err.response?.data?.error || err.message);
-      return null;
     }
   };
 
@@ -250,11 +240,7 @@ function App() {
                       </p>
                     </div>
                   ) : questions.length > 0 ? (
-                    <QuestionPanel
-                      questions={questions}
-                      onCheckAnswers={handleCheckAnswers}
-                      isChecking={isLoading}
-                    />
+                    <QuestionPanel questions={questions} />
                   ) : (
                     <div className="h-full flex items-center justify-center text-slate-500 glass-panel rounded-2xl">
                       <p>Select text in the document to generate a quiz</p>
