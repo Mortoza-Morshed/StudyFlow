@@ -12,6 +12,9 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
   // Handle text selection logic
   useEffect(() => {
     const handleSelectionChange = () => {
+      // If we are currently generating, don't show or update the menu
+      if (isGenerating) return;
+
       // Small timeout to allow the browser to complete the selection update
       requestAnimationFrame(() => {
         const selection = window.getSelection();
@@ -22,7 +25,7 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
           selection.isCollapsed ||
           !contentRef.current?.contains(selection.anchorNode)
         ) {
-          if (!isGenerating && isSelectionActive) {
+          if (isSelectionActive) {
             setIsSelectionActive(false);
             setTimeout(() => setSelectedText(""), 200); // Animation delay
           }
@@ -80,14 +83,22 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
     };
   }, [isGenerating, isSelectionActive]);
 
+  // Clear selection once generation is complete
+  useEffect(() => {
+    if (!isGenerating && selectedText) {
+      window.getSelection()?.removeAllRanges();
+      setSelectedText("");
+      setIsSelectionActive(false);
+    }
+  }, [isGenerating]);
+
   const handleGenerateClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (selectedText) {
       onGenerateQuestions(selectedText, 5, provider);
-      window.getSelection().removeAllRanges();
-      setSelectedText("");
+      // Hide the menu immediately, but keep selection/text for context
       setIsSelectionActive(false);
     }
   };

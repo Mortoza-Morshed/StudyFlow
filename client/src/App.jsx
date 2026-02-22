@@ -52,13 +52,7 @@ function App() {
   };
 
   const handleHomeClick = () => {
-    if (documentText) {
-      if (confirm("Go back to upload? Your current document will be closed.")) {
-        handleNewDocument();
-      }
-    } else {
-      handleNewDocument();
-    }
+    handleNewDocument();
   };
 
   return (
@@ -149,108 +143,96 @@ function App() {
           )}
         </AnimatePresence>
 
-        <AnimatePresence mode="wait">
-          {currentView === "upload" && (
-            <motion.div
-              key="upload"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-              className="max-w-2xl mx-auto w-full my-auto"
-            >
-              <div className="text-center mb-12">
-                <div className="inline-flex items-center justify-center p-3 mb-6 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl border border-white/10 shadow-xl backdrop-blur-xl">
-                  <Sparkles className="w-8 h-8 text-indigo-400" />
-                </div>
-                <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400 mb-4">
-                  Welcome to StudyFlow
-                </h2>
-                <p className="text-lg text-slate-400 leading-relaxed max-w-lg mx-auto">
-                  Transform your study materials into interactive quizzes instantly. Just upload
-                  your notes and let AI do the magic.
-                </p>
-              </div>
-
-              <DocumentUploader onDocumentLoaded={handleDocumentLoaded} isLoading={isLoading} />
-            </motion.div>
-          )}
-
-          {currentView === "document" && (
-            <motion.div
-              key="document"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="w-full"
-            >
-              <DocumentViewer
-                documentText={documentText}
-                onGenerateQuestions={handleGenerateQuestions}
-                isGenerating={isLoading}
-              />
-            </motion.div>
-          )}
-
-          {currentView === "split" && (
-            <motion.div
-              key="split"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-8rem)]"
-            >
-              {/* Left Panel: Document */}
+        <div className="flex-1 relative flex flex-col">
+          <AnimatePresence mode="wait">
+            {currentView === "upload" ? (
               <motion.div
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="h-full overflow-hidden flex flex-col"
+                key="upload"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-2xl mx-auto w-full my-auto"
               >
-                <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                  <DocumentViewer
-                    documentText={documentText}
-                    onGenerateQuestions={handleGenerateQuestions}
-                    isGenerating={isLoading}
-                  />
+                <div className="text-center mb-12">
+                  <div className="inline-flex items-center justify-center p-3 mb-6 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl border border-white/10 shadow-xl backdrop-blur-xl">
+                    <Sparkles className="w-8 h-8 text-indigo-400" />
+                  </div>
+                  <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400 mb-4">
+                    Welcome to StudyFlow
+                  </h2>
+                  <p className="text-lg text-slate-400 leading-relaxed max-w-lg mx-auto">
+                    Transform your study materials into interactive quizzes instantly. Just upload
+                    your notes and let AI do the magic.
+                  </p>
                 </div>
+
+                <DocumentUploader onDocumentLoaded={handleDocumentLoaded} isLoading={isLoading} />
               </motion.div>
-
-              {/* Right Panel: Quiz */}
+            ) : (
+              /* Workspace View: Stable DocumentViewer + Conditional Quiz Panel */
               <motion.div
-                initial={{ x: 50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="h-full overflow-hidden flex flex-col"
+                key="workspace"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="h-[calc(100vh-8rem)] flex gap-8 overflow-hidden"
               >
-                <div className="flex-1 overflow-y-auto custom-scrollbar pl-2">
-                  {isLoading ? (
-                    <div className="h-full flex flex-col items-center justify-center space-y-4 p-8 glass-panel rounded-2xl">
-                      <div className="relative">
-                        <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Sparkles className="w-6 h-6 text-indigo-400 animate-pulse" />
-                        </div>
+                {/* Left Panel: Document (Always present in Workspace) */}
+                <div
+                  className={`transition-all duration-500 ease-in-out h-full overflow-hidden flex flex-col ${
+                    currentView === "split" ? "w-1/2" : "w-full"
+                  }`}
+                >
+                  <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                    <DocumentViewer
+                      documentText={documentText}
+                      onGenerateQuestions={handleGenerateQuestions}
+                      isGenerating={isLoading}
+                    />
+                  </div>
+                </div>
+
+                {/* Right Panel: Quiz Center */}
+                <AnimatePresence>
+                  {currentView === "split" && (
+                    <motion.div
+                      initial={{ x: 50, opacity: 0, width: 0 }}
+                      animate={{ x: 0, opacity: 1, width: "50%" }}
+                      exit={{ x: 50, opacity: 0, width: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="h-full overflow-hidden flex flex-col"
+                    >
+                      <div className="flex-1 overflow-y-auto custom-scrollbar pl-2">
+                        {isLoading ? (
+                          <div className="h-full flex flex-col items-center justify-center space-y-4 p-8 glass-panel rounded-2xl">
+                            <div className="relative">
+                              <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Sparkles className="w-6 h-6 text-indigo-400 animate-pulse" />
+                              </div>
+                            </div>
+                            <h3 className="text-xl font-medium text-white">Analyzing Content...</h3>
+                            <p className="text-slate-400 text-center max-w-xs">
+                              Our AI is reading your text and crafting challenging questions to test
+                              your knowledge.
+                            </p>
+                          </div>
+                        ) : questions.length > 0 ? (
+                          <QuestionPanel questions={questions} />
+                        ) : (
+                          <div className="h-full flex items-center justify-center text-slate-500 glass-panel rounded-2xl text-center p-8">
+                            <p>Highlight text in the document and click "Generate Quiz" to start</p>
+                          </div>
+                        )}
                       </div>
-                      <h3 className="text-xl font-medium text-white">Analyzing Content...</h3>
-                      <p className="text-slate-400 text-center max-w-xs">
-                        Our AI is reading your text and crafting challenging questions to test your
-                        knowledge.
-                      </p>
-                    </div>
-                  ) : questions.length > 0 ? (
-                    <QuestionPanel questions={questions} />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-slate-500 glass-panel rounded-2xl">
-                      <p>Select text in the document to generate a quiz</p>
-                    </div>
+                    </motion.div>
                   )}
-                </div>
+                </AnimatePresence>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </AnimatePresence>
+        </div>
       </main>
     </div>
   );
