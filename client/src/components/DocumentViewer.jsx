@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, MousePointerClick, Cpu } from "lucide-react";
+import { Sparkles, Cpu } from "lucide-react";
 
 function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
   const [selectedText, setSelectedText] = useState("");
@@ -12,14 +12,11 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
   // Handle text selection logic
   useEffect(() => {
     const handleSelectionChange = () => {
-      // If we are currently generating, don't show or update the menu
       if (isGenerating) return;
 
-      // Small timeout to allow the browser to complete the selection update
       requestAnimationFrame(() => {
         const selection = window.getSelection();
 
-        // Ensure we have a valid selection inside our content
         if (
           !selection ||
           selection.isCollapsed ||
@@ -27,7 +24,7 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
         ) {
           if (isSelectionActive) {
             setIsSelectionActive(false);
-            setTimeout(() => setSelectedText(""), 200); // Animation delay
+            setTimeout(() => setSelectedText(""), 200);
           }
           return;
         }
@@ -38,9 +35,8 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
             const range = selection.getRangeAt(0);
             const rect = range.getBoundingClientRect();
 
-            // Calculate absolute position (centered below selection)
             setMenuPosition({
-              top: rect.bottom + 10, // 10px below the text
+              top: rect.bottom + 10,
               left: rect.left + rect.width / 2,
             });
 
@@ -56,21 +52,17 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
     };
 
     const handleMouseUp = (e) => {
-      // Prevent clearing if clicking the menu itself
       if (e.target.closest(".selection-menu")) return;
       handleSelectionChange();
     };
 
-    // Also listen for keyup (shift+arrow selection)
     const handleKeyUp = (e) => {
       if (e.shiftKey) handleSelectionChange();
     };
 
-    // Global listener to capture selection anywhere in document but filtered logic above handles the 'where'
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("keyup", handleKeyUp);
 
-    // Handle scrolling to update position if needed, or close menu
     const handleScroll = () => {
       if (isSelectionActive) handleSelectionChange();
     };
@@ -83,7 +75,6 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
     };
   }, [isGenerating, isSelectionActive]);
 
-  // Clear selection once generation is complete
   useEffect(() => {
     if (!isGenerating && selectedText) {
       window.getSelection()?.removeAllRanges();
@@ -98,95 +89,91 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
 
     if (selectedText) {
       onGenerateQuestions(selectedText, 5, provider);
-      // Hide the menu immediately, but keep selection/text for context
       setIsSelectionActive(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto relative px-4">
+    <div className="max-w-4xl mx-auto relative">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 px-2">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2">Document Content</h2>
-          <p className="text-slate-400">Highlight any text to generate a quiz</p>
+          <h2 className="text-2xl font-bold tracking-tight mb-1">Document Analysis</h2>
+          <p className="text-text-muted text-xs font-mono uppercase tracking-widest">
+            Select text fragments to generate quizzes
+          </p>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="glass-panel rounded-2xl p-8 md:p-12 min-h-[60vh] relative shadow-2xl border-white/5">
+      <div className="glass-panel rounded-3xl p-10 md:p-14 relative shadow-2xl overflow-hidden group">
+        {/* Subtle radial glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-accent-primary/5 blur-[120px] pointer-events-none opacity-50 transition-opacity group-hover:opacity-100" />
+
         <div
           ref={contentRef}
-          className="prose prose-invert prose-lg max-w-none text-slate-300 leading-relaxed font-light font-body selection:bg-indigo-500/30 selection:text-indigo-200"
+          className="relative prose prose-invert prose-lg max-w-none text-text-primary leading-[1.8] font-light selection:bg-accent-primary/30 selection:text-white"
         >
           {documentText.split("\n").map((paragraph, index) => (
-            <p key={index} className="mb-6 text-justify">
+            <p
+              key={index}
+              className="mb-8 text-justify opacity-90 hover:opacity-100 transition-opacity"
+            >
               {paragraph}
             </p>
           ))}
         </div>
       </div>
 
-      {/* Floating Context Menu - "Hovering" effect */}
+      {/* Floating Context Menu */}
       <AnimatePresence>
         {isSelectionActive && selectedText && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -10 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            transition={{ type: "spring", stiffness: 450, damping: 30 }}
             style={{
               position: "fixed",
               top: menuPosition.top,
               left: menuPosition.left,
-              transform: "translateX(-50%)", // Center horizontally using transform
+              transform: "translateX(-50%)",
               zIndex: 9999,
             }}
-            className="selection-menu pointer-events-auto"
+            className="selection-menu"
           >
-            <div className="bg-slate-900/95 backdrop-blur-xl border border-white/10 shadow-2xl rounded-full p-1.5 flex items-center gap-2 ring-1 ring-white/20">
+            <div className="bg-bg-base/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl p-2 flex items-center gap-2 ring-1 ring-white/10">
               <button
                 onClick={handleGenerateClick}
                 disabled={isGenerating}
-                className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white px-5 py-2.5 rounded-full font-medium text-sm hover:shadow-lg hover:shadow-indigo-500/25 hover:scale-105 transition-all active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-2 bg-accent-primary text-white pl-4 pr-5 py-2.5 rounded-xl font-bold text-sm hover:bg-accent-hover transition-all active:scale-95 disabled:opacity-50"
               >
                 {isGenerating ? (
-                  <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    >
-                      <Sparkles className="w-4 h-4" />
-                    </motion.div>
-                    <span>Generating...</span>
-                  </>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
                 ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 fill-white/20" />
-                    <span>Generate Quiz</span>
-                  </>
+                  <Sparkles className="w-4 h-4 fill-white/20" />
                 )}
+                <span>{isGenerating ? "Generating..." : "Generate Quiz"}</span>
               </button>
 
-              <div className="px-3 border-l border-white/10 text-xs text-slate-400 font-medium whitespace-nowrap tabular-nums">
-                {selectedText.length} chars
-              </div>
+              <div className="h-6 w-px bg-white/10 mx-1" />
 
               {/* Provider Toggle */}
-              <div className="flex items-center border-l border-white/10 pl-2 gap-1">
+              <div className="flex items-center gap-1 bg-bg-surface/50 p-1 rounded-xl border border-white/5">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setProvider("gemini");
                   }}
-                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                     provider === "gemini"
-                      ? "bg-indigo-500/30 text-indigo-300 border border-indigo-500/30"
-                      : "text-slate-500 hover:text-slate-300"
+                      ? "bg-white/10 text-white shadow-inner"
+                      : "text-text-muted hover:text-text-primary"
                   }`}
-                  title="Google Gemini"
                 >
-                  <Sparkles className="w-3 h-3" />
+                  <Sparkles
+                    className={`w-3 h-3 ${provider === "gemini" ? "text-accent-primary" : ""}`}
+                  />
                   Gemini
                 </button>
                 <button
@@ -194,36 +181,52 @@ function DocumentViewer({ documentText, onGenerateQuestions, isGenerating }) {
                     e.stopPropagation();
                     setProvider("openrouter");
                   }}
-                  className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                     provider === "openrouter"
-                      ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
-                      : "text-slate-500 hover:text-slate-300"
+                      ? "bg-white/10 text-white shadow-inner"
+                      : "text-text-muted hover:text-text-primary"
                   }`}
-                  title="OpenRouter (Fallback Enabled)"
                 >
-                  <Cpu className="w-3 h-3" />
-                  Advanced AI
+                  <Cpu
+                    className={`w-3 h-3 ${provider === "openrouter" ? "text-accent-primary" : ""}`}
+                  />
+                  Advanced
                 </button>
+              </div>
+
+              <div className="px-3 border-l border-white/10 text-[10px] font-mono text-text-muted font-bold tracking-tighter uppercase tabular-nums">
+                {selectedText.length} CH
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Empty State Hint */}
-      {!isSelectionActive && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.5 }}
-          transition={{ delay: 2 }}
-          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 text-slate-500 text-sm flex items-center justify-center gap-2 bg-slate-900/50 px-4 py-2 rounded-full border border-white/5 backdrop-blur-sm pointer-events-none"
-        >
-          <MousePointerClick className="w-4 h-4" />
-          <span>Highlight text to see magic actions</span>
-        </motion.div>
-      )}
     </div>
   );
 }
+
+const Loader2 = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M12 2v4" />
+    <path d="m16.2 7.8 2.9-2.9" />
+    <path d="M18 12h4" />
+    <path d="m16.2 16.2 2.9 2.9" />
+    <path d="M12 18v4" />
+    <path d="m4.9 19.1 2.9-2.9" />
+    <path d="M2 12h4" />
+    <path d="m4.9 4.9 2.9 2.9" />
+  </svg>
+);
 
 export default DocumentViewer;

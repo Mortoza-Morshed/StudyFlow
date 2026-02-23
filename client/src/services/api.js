@@ -35,8 +35,28 @@ export const generateQuestions = async (text, count = 5, provider = "gemini") =>
   return response.data;
 };
 
-export const checkAnswers = async (questions, userAnswers) => {
-  const response = await api.post("/questions/check", { questions, userAnswers });
+export const checkAnswers = async (questions, userAnswers, documentId, title) => {
+  const response = await api.post("/questions/check", {
+    questions,
+    userAnswers,
+    documentId,
+    title,
+  });
+  return response.data;
+};
+
+export const getDocuments = async () => {
+  const response = await api.get("/documents");
+  return response.data;
+};
+
+export const getQuizzes = async () => {
+  const response = await api.get("/questions/history");
+  return response.data;
+};
+
+export const getStats = async () => {
+  const response = await api.get("/questions/stats");
   return response.data;
 };
 

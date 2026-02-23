@@ -1,4 +1,5 @@
 import { generateMCQs } from "../utils/aiService.js";
+import Quiz from "../models/Quiz.model.js";
 
 export const generateQuestions = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ export const generateQuestions = async (req, res) => {
 
 export const checkAnswers = async (req, res) => {
   try {
-    const { questions, userAnswers } = req.body;
+    const { questions, userAnswers, documentId, title } = req.body;
 
     if (!questions || !userAnswers) {
       return res.status(400).json({
@@ -67,8 +68,29 @@ export const checkAnswers = async (req, res) => {
     const total = questions.length;
     const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
 
+    // Persist to DB
+    const savedQuiz = await Quiz.create({
+      documentId,
+      title: title || "Quiz Session",
+      questions: questions.map((q) => ({
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
+      })),
+      results: results.map((r) => ({
+        questionId: r.questionId,
+        userAnswer: r.userAnswer,
+        isCorrect: r.isCorrect,
+      })),
+      score,
+      total,
+      percentage,
+    });
+
     res.json({
       success: true,
+      id: savedQuiz._id,
       results,
       score,
       total,
@@ -80,5 +102,42 @@ export const checkAnswers = async (req, res) => {
       success: false,
       error: "Failed to check answers",
     });
+  }
+};
+
+export const getQuizzes = async (req, res) => {
+  try {
+    const quizzes = await Quiz.find().sort({ createdAt: -1 }).limit(20);
+    res.json({ success: true, quizzes });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getStats = async (req, res) => {
+  try {
+    const quizzes = await Quiz.find();
+
+    const totalQuizzes = quizzes.length;
+    const avgAccuracy =
+      totalQuizzes > 0
+        ? Math.round(quizzes.reduce((acc, q) => acc + q.percentage, 0) / totalQuizzes)
+        : 0;
+
+    // For study time we can estimate based on number of questions (2 mins per question)
+    const studyTime = quizzes.reduce((acc, q) => acc + q.total * 2, 0);
+    const studyTimeHours = (studyTime / 60).toFixed(1);
+
+    res.json({
+      success: true,
+      stats: {
+        totalQuizzes,
+        avgAccuracy: `${avgAccuracy}%`,
+        studyTime: `${studyTimeHours}h`,
+        docsSynced: await Quiz.distinct("documentId").then((docs) => docs.length),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

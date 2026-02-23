@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, FileText, Clipboard, X, Loader2, File } from "lucide-react";
+import { UploadCloud, FileText, Clipboard, Loader2, Info, Plus, Sparkles } from "lucide-react";
 
 function DocumentUploader({ onDocumentLoaded, isLoading }) {
   const [dragActive, setDragActive] = useState(false);
@@ -54,35 +54,35 @@ function DocumentUploader({ onDocumentLoaded, isLoading }) {
     onDocumentLoaded(null, pasteText);
   };
 
+  const tabs = [
+    { id: "upload", label: "Upload File", icon: UploadCloud },
+    { id: "paste", label: "Paste Text", icon: Clipboard },
+  ];
+
   return (
-    <div className="glass-panel rounded-2xl p-1 max-w-2xl mx-auto overflow-hidden">
-      {/* Tabs */}
-      <div className="grid grid-cols-2 gap-1 p-1 bg-black/20 rounded-xl mb-6">
-        <button
-          onClick={() => setActiveTab("upload")}
-          className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-medium transition-all ${
-            activeTab === "upload"
-              ? "bg-white/10 text-white shadow-lg border border-white/5"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
-          }`}
-        >
-          <UploadCloud className="w-4 h-4" />
-          Upload File
-        </button>
-        <button
-          onClick={() => setActiveTab("paste")}
-          className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-medium transition-all ${
-            activeTab === "paste"
-              ? "bg-white/10 text-white shadow-lg border border-white/5"
-              : "text-slate-400 hover:text-white hover:bg-white/5"
-          }`}
-        >
-          <Clipboard className="w-4 h-4" />
-          Paste Text
-        </button>
+    <div className="glass-panel rounded-2xl overflow-hidden">
+      {/* Tabs Header */}
+      <div className="flex border-b border-border-subtle relative px-6">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`relative flex items-center gap-2 py-4 px-4 text-sm font-semibold transition-colors ${
+              activeTab === tab.id
+                ? "text-accent-primary"
+                : "text-text-muted hover:text-text-primary"
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+            {activeTab === tab.id && (
+              <motion.div layoutId="activeTab" className="tab-indicator" initial={false} />
+            )}
+          </button>
+        ))}
       </div>
 
-      <div className="p-6 pt-0">
+      <div className="p-8">
         <AnimatePresence mode="wait">
           {activeTab === "upload" ? (
             <motion.div
@@ -93,10 +93,10 @@ function DocumentUploader({ onDocumentLoaded, isLoading }) {
               transition={{ duration: 0.2 }}
             >
               <div
-                className={`relative group border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
+                className={`relative group border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 ${
                   dragActive
-                    ? "border-indigo-500 bg-indigo-500/10 scale-[1.02]"
-                    : "border-slate-700/50 hover:border-indigo-500/50 hover:bg-slate-800/50"
+                    ? "border-accent-primary bg-accent-primary/5 scale-[1.01]"
+                    : "border-border-subtle hover:border-accent-primary/50 hover:bg-bg-surface"
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -112,32 +112,74 @@ function DocumentUploader({ onDocumentLoaded, isLoading }) {
                   hidden
                 />
 
-                <div className="flex flex-col items-center gap-4">
-                  <div
-                    className={`p-4 rounded-full bg-slate-800/50 text-indigo-400 mb-2 transition-transform duration-300 ${dragActive ? "scale-110 rotate-3" : "group-hover:scale-110"}`}
+                <div className="flex flex-col items-center gap-6">
+                  <motion.div
+                    animate={dragActive ? { scale: 1.1, rotate: 5 } : {}}
+                    whileHover={{ scale: 1.1 }}
+                    className="p-5 rounded-2xl bg-bg-surface text-accent-primary border border-border-subtle shadow-inner"
                   >
                     {isLoading ? (
-                      <Loader2 className="w-8 h-8 animate-spin" />
+                      <Loader2 className="w-10 h-10 animate-spin" />
                     ) : (
-                      <UploadCloud className="w-8 h-8" />
+                      <UploadCloud className="w-10 h-10" />
                     )}
-                  </div>
+                  </motion.div>
+
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-1">
-                      {dragActive ? "Drop it like it's hot!" : "Click to upload or drag & drop"}
+                    <h3 className="text-xl font-bold mb-2">
+                      {dragActive ? "Drop documents here" : "Click to select or drag & drop"}
                     </h3>
-                    <p className="text-slate-400 text-sm">TXT, PDF, or DOCX up to 10MB</p>
+                    <p className="text-text-muted text-sm mb-6">
+                      PDF, DOCX, or TXT (Max size 10MB)
+                    </p>
+
+                    <div className="flex flex-wrap justify-center gap-2 mb-8">
+                      {["PDF", "DOCX", "TXT"].map((type) => (
+                        <span
+                          key={type}
+                          className="px-3 py-1 rounded bg-bg-surface border border-border-subtle text-[10px] font-mono font-bold tracking-widest text-text-muted"
+                        >
+                          {type}
+                        </span>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="primary-btn inline-flex items-center gap-2 group/btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fileInputRef.current?.click();
+                      }}
+                    >
+                      <Plus className="w-4 h-4 group-hover/btn:rotate-90 transition-transform" />
+                      <span>Browse Files</span>
+                    </button>
                   </div>
                 </div>
 
                 {isLoading && (
-                  <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                    <div className="flex items-center gap-3 bg-slate-800 px-6 py-3 rounded-full border border-white/10 shadow-xl">
-                      <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
-                      <span className="text-sm font-medium">Processing document...</span>
+                  <div className="absolute inset-0 bg-bg-base/80 backdrop-blur-[2px] rounded-2xl flex items-center justify-center z-10">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="relative">
+                        <Loader2 className="w-12 h-12 text-accent-primary animate-spin" />
+                        <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-accent-primary animate-pulse" />
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-lg">Scanning Document</p>
+                        <p className="text-xs text-text-muted">Extracting text using NLP...</p>
+                      </div>
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="mt-6 flex items-start gap-3 p-4 rounded-xl bg-accent-primary/5 border border-accent-primary/10">
+                <Info className="w-5 h-5 text-accent-primary mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-text-muted leading-relaxed">
+                  Your files are processed securely. AI analysis usually takes 5-10 seconds
+                  depending on the document length.
+                </p>
               </div>
             </motion.div>
           ) : (
@@ -147,17 +189,17 @@ function DocumentUploader({ onDocumentLoaded, isLoading }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="space-y-4"
+              className="space-y-6"
             >
-              <div className="relative">
+              <div className="relative group">
                 <textarea
                   value={pasteText}
                   onChange={(e) => setPasteText(e.target.value)}
-                  placeholder="Paste your study notes here..."
-                  className="w-full h-64 bg-slate-950/50 border border-slate-700/50 rounded-xl p-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent resize-none font-mono text-sm leading-relaxed"
+                  placeholder="Insert your study notes, lecture transcript, or textbook excerpt here..."
+                  className="w-full h-72 bg-bg-surface border border-border-subtle rounded-2xl p-6 text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-accent-primary transition-all font-mono text-sm leading-relaxed resize-none group-hover:bg-bg-surface/50"
                   disabled={isLoading}
                 />
-                <div className="absolute bottom-4 right-4 text-xs text-slate-500 bg-slate-900/80 px-2 py-1 rounded-md border border-white/5">
+                <div className="absolute bottom-4 right-4 text-[10px] font-mono text-text-muted bg-bg-base/80 px-2 py-1 rounded border border-border-subtle backdrop-blur-sm">
                   {pasteText.length} characters
                 </div>
               </div>
@@ -166,7 +208,7 @@ function DocumentUploader({ onDocumentLoaded, isLoading }) {
                 <button
                   onClick={handlePasteSubmit}
                   disabled={isLoading || pasteText.trim().length === 0}
-                  className="glass-btn disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="primary-btn disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isLoading ? (
                     <>
@@ -176,7 +218,7 @@ function DocumentUploader({ onDocumentLoaded, isLoading }) {
                   ) : (
                     <>
                       <FileText className="w-4 h-4" />
-                      Process Text
+                      Generate from Text
                     </>
                   )}
                 </button>
